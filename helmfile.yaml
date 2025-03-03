@@ -1,0 +1,43 @@
+repositories:
+  - name: kuma
+    url:  https://kumahq.github.io/charts
+
+releases:
+  - name: kuma
+    chart: kuma/kuma
+    version: 2.9.4
+    namespace: kuma-system
+    createNamespace: true
+    historyMax: 10
+    cascade: background
+    insecureSkipTLSVerify: false
+    timeout: 300
+    recreatePods: false
+    force: false
+    wait: true
+    waitForJobs: true
+    values:
+      - values/kong-mesh.yaml
+    hooks:
+      - events: [presync]
+        command: kubectl
+        args:
+          - apply
+          - -f
+          - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
+        showlogs: true
+      - events: [postsync]
+        command: kubectl
+        args:
+          - apply
+          - -f
+          - kong-mesh.yaml
+        showlogs: true
+      - events: [postsync]
+        command: kubectl
+        args:
+          - apply
+          - -f
+          - httpbin.yaml 
+        showlogs: true
+      
