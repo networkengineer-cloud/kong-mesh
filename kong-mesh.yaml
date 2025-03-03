@@ -1,0 +1,92 @@
+#Create a default Mesh
+---
+apiVersion: kuma.io/v1alpha1
+kind: Mesh
+metadata:
+  name: demo
+spec:
+  mtls:
+    enabledBackend: ca-1
+    backends:
+      - name: ca-1
+        type: builtin
+        dpCert:
+          rotation:
+            expiration: 1d
+        conf:
+          caCert:
+            RSAbits: 2048
+            expiration: 10y
+  networking:
+    outbound:
+      passthrough: false
+  meshServices:
+    mode: Everywhere
+  routing:
+    zoneEgress: true
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshAccessLog
+metadata:
+ name: all-outgoing-traffic
+ namespace: kuma-system
+ labels:
+    kuma.io/mesh: demo
+spec:
+ to:
+ - targetRef:
+     kind: Mesh
+   default:
+     backends:
+     - type: File
+       file:
+         format:
+           type: Json
+           json:
+             - key: mesh_name
+               value: '%KUMA_MESH%'
+             - key: start_time
+               value: '%START_TIME%'
+             - key: x-request-id
+               value: '%REQ(X-REQUEST-ID)%'
+             - key: response_flags
+               value: '%RESPONSE_FLAGS_LONG%'
+             - key: response_code
+               value: '%RESPONSE_CODE%'
+             - key: protocol
+               value: '%PROTOCOL%'
+             - key: request_method
+               value: '%REQ(:METHOD)%'
+             - key: request_url
+               value: '%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%'
+             - key: source
+               value: '%KUMA_SOURCE_SERVICE%'
+             - key: destination
+               value: '%KUMA_DESTINATION_SERVICE%'
+             - key: source_address
+               value: '%KUMA_SOURCE_ADDRESS_WITHOUT_PORT%'
+             - key: destination_address
+               value: '%UPSTREAM_HOST%'
+             - key: host
+               value: '%REQ(:AUTHORITY)%'
+             - key: traffic_direction
+               value: '%KUMA_TRAFFIC_DIRECTION%'
+             - key: x-forwarded-for
+               value: '%REQ(X-FORWARDED-FOR)%'
+             - key: user-agent
+               value: '%REQ(USER-AGENT)%'
+             - key: duration_millis
+               value: '%DURATION%'
+             - key: upstream-service-time
+               value: '%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%'
+             - key: bytes_received
+               value: '%BYTES_RECEIVED%'
+             - key: bytes_sent
+               value: '%BYTES_SENT%'
+             - key: upstream_failure_reason
+               value: '%UPSTREAM_TRANSPORT_FAILURE_REASON%'
+             - key: response_code_details
+               value: '%RESPONSE_CODE_DETAILS%'
+             - key: connection_termination_details
+               value: '%CONNECTION_TERMINATION_DETAILS%'
+         path: "/dev/stdout"
