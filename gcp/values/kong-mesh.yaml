@@ -1,0 +1,5 @@
+controlPlane:
+  mode: global
+  globalZoneSyncService:
+    defaults:
+      skipMeshCreation: true

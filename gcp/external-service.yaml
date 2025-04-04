@@ -6,10 +6,10 @@ metadata:
 spec:
   tags:
     kuma.io/service: httpbin-ext
-    kuma.io/protocol: http # optional, one of http, http2, tcp, grpc, kafka
+    kuma.io/protocol: tcp # optional, one of http, http2, tcp, grpc, kafka
   networking:
     address: httpbin.org:443
-    tls:
-      enabled: true
-      serverName: httpbin.org
-      allowRenegotiation: false
+    # tls:
+    #   enabled: true
+    #   serverName: httpbin.org
+    #   allowRenegotiation: false
