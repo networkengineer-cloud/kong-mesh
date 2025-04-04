@@ -1,0 +1,13 @@
+ingress:
+  enabled: false
+egress:
+  enabled: true
+controlPlane:
+  kdsGlobalAddress: grpcs://172.21.0.4:5685
+  zone: kuma-worker-1
+  supportGatewaySecretsInAllNamespaces: true
+  tls:
+    kdsZoneClient:
+      skipVerify: true
+experimental:
+  sidecarContainers: true
